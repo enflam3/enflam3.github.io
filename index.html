@@ -1,55 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Animated Background</title>
-  <style>
-    body, html {
-      height: 100%;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #1c1d26;
-      overflow: hidden;
-    }
+    <title>Hello, World!</title>
+    <style>
+        body {
+            background-color: #000;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
 
-    body::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, #1c1d26, #495289, #00d1ff);
-      background-size: 200%;
-      z-index: -1;
-      animation: gradient 15s ease infinite;
-    }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
 
-    @keyframes gradient {
-      0% {
-        background-position: 0%;
-      }
-      50% {
-        background-position: 100%;
-      }
-      100% {
-        background-position: 0%;
-      }
-    }
+        #hello {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 48px;
+            animation: pulse 2s infinite;
+        }
 
-    .content {
-      color: white;
-      font-size: 3em;
-      font-weight: bold;
-      text-shadow: 0 0 10px #00d1ff, 0 0 20px #00d1ff, 0 0 30px #00d1ff, 0 0 40px #00d1ff;
-    }
-  </style>
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="content">
-    Hello, world!
-  </div>
+    <canvas id="canvas"></canvas>
+    <div id="hello">Hello, World!</div>
+
+    <script>
+        // Set up the canvas
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Create an array to store the lasers
+        var lasers = [];
+
+        // Function to create a laser
+        function createLaser() {
+            var laser = {
+                x: Math.random() * canvas.width,   // Random x position
+                y: canvas.height,                   // Start at the bottom of the canvas
+                width: 2,
+                height: 10,
+                color: '#ff0000',
+                speed: 5                             // Speed of the laser
+            };
+            lasers.push(laser);
+        }
+
+        // Function to update the lasers
+        function updateLasers() {
+            for (var i = 0; i < lasers.length; i++) {
+                var laser = lasers[i];
+                laser.y -= laser.speed;    // Move the laser up
+                if (laser.y + laser.height < 0) {
+                    // Remove the laser from the array if it goes offscreen
+                    lasers.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        // Function to draw the lasers
+        function drawLasers() {
+            for (var i = 0; i < lasers.length; i++) {
+                var laser = lasers[i];
+                ctx.fillStyle = laser.color;
+                ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+            }
+        }
+
+        // Function to update the canvas
+        function updateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear the canvas
+            createLaser();                                      // Create a new laser
+            updateLasers();                                     // Update the lasers
+            drawLasers();                                       // Draw the lasers
+            requestAnimationFrame(updateCanvas);                // Call updateCanvas() again
+        }
+
+        // Start the animation
+        updateCanvas();
+    </script>
 </body>
 </html>
